@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dapur Bu eL Invoice</title>
+
+  <!-- Google Font: Poppins -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- 1) Include the html2canvas library via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    /* Global styles */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 40px auto;
+      max-width: 800px;
+      background: #f3f4f6; /* Light gray background for modern feel */
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+    }
+
+    /* Container with a subtle shadow and white background */
+    .invoice-container {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 30px 40px;
+    }
+
+    /* Header styles */
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .invoice-header-left h1 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 24px;
+      color: #2c3e50;
+    }
+    .shop-address {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #7f8c8d;
+      line-height: 1.4;
+    }
+
+    /* Invoice details (flex columns) */
+    .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    .invoice-details .info {
+      width: 48%;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      margin-bottom: 12px;
+    }
+
+    /* Table styles */
+    .item-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .item-table th {
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .item-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .qty,
+    .price {
+      background-color: #fafafa;
+    }
+    .subtotal {
+      background-color: #fefefe;
+      font-weight: 600;
+    }
+
+    /* Total & Notes */
+    .total-section {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+    .payment-section {
+      margin-top: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .notes-section {
+      margin-top: 30px;
+    }
+    .notes-section label {
+      font-weight: 600;
+    }
+    .placeholder-text {
+      color: #999;
+    }
+
+    /* Responsive tweak for smaller screens */
+    @media (max-width: 600px) {
+      .invoice-details .info {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Invoice Container -->
+  <div class="invoice-container">
+    <!-- Header Section -->
+    <div class="invoice-header">
+      <div class="invoice-header-left">
+        <h1>Invoice</h1>
+        <div class="shop-address">
+          Lippo Village, Tangerang<br>
+          Phone: 0851-8338-3455 | Email: dapurbuel1925@gmail.com
+        </div>
+      </div>
+      <!-- Real Logo -->
+      <img 
+        src="images/logo_dapur_bu_el.png" 
+        alt="Dapur Bu eL Logo" 
+        style="max-width: 150px; height: auto; border-radius: 8px;" 
+      />
+    </div>
+
+    <!-- Invoice Info & Customer Info -->
+    <div class="invoice-details">
+      <div class="info">
+        <label for="invoiceNumber">Invoice #</label>
+        <input type="text" id="invoiceNumber" placeholder="E.g., INV-001" />
+
+        <label for="invoiceDate">Date</label>
+        <input type="text" id="invoiceDate" placeholder="E.g., 2024-12-28" />
+      </div>
+      <div class="info">
+        <label for="customerName">Customer Name</label>
+        <input type="text" id="customerName" placeholder="E.g., John Doe" />
+
+        <label for="customerContact">Contact</label>
+        <input type="text" id="customerContact" placeholder="E.g., +123 456 7890" />
+      </div>
+    </div>
+
+    <!-- Item Table -->
+    <table class="item-table" id="invoiceTable">
+      <thead>
+        <tr>
+          <th style="width: 40%;">Item Description</th>
+          <th style="width: 15%;">Qty</th>
+          <th style="width: 20%;">Price (.000)</th>
+          <th style="width: 25%;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td contenteditable="true" class="placeholder-text">Sate Rempah Rasa</td>
+          <td contenteditable="true" class="qty">2</td>
+          <td contenteditable="true" class="price">10000</td>
+          <td class="subtotal">20000</td>
+        </tr>
+        <tr>
+          <td contenteditable="true" class="placeholder-text">Sate Bumbu Kacang</td>
+          <td contenteditable="true" class="qty">2</td>
+          <td contenteditable="true" class="price">15000</td>
+          <td class="subtotal">30000</td>
+        </tr>
+        <tr>
+          <td contenteditable="true" class="placeholder-text"></td>
+          <td contenteditable="true" class="qty">3</td>
+          <td contenteditable="true" class="price">2000</td>
+          <td class="subtotal">6000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Grand Total -->
+    <div class="total-section">
+      Grand Total: <span id="grandTotal">56000</span>
+    </div>
+
+    <!-- Payment Section -->
+    <div class="payment-section">
+      <strong>Payment:</strong> BCA 8840746527 a.n. Rahmani Clementina Hulu
+    </div>
+
+    <!-- Notes -->
+    <div class="notes-section">
+      <label for="notes">Additional Notes</label>
+      <textarea id="notes" rows="3" placeholder="Write any additional notes here..."></textarea>
+    </div>
+  </div>
+
+  <!-- Export as PNG button -->
+  <button 
+    onclick="exportAsImage()" 
+    style="display: block; margin: 20px auto; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer;">
+    Export as PNG
+  </button>
+
+  <!-- 2) JavaScript for auto-calculation + html2canvas export -->
+  <script>
+    // (A) Update totals logic
+    function updateTotals() {
+      const rows = document.querySelectorAll('#invoiceTable tbody tr');
+      let grandTotal = 0;
+
+      rows.forEach((row) => {
+        const qtyCell = row.querySelector('.qty');
+        const priceCell = row.querySelector('.price');
+        const subtotalCell = row.querySelector('.subtotal');
+
+        const qty = parseFloat(qtyCell.innerText) || 0;
+        const price = parseFloat(priceCell.innerText) || 0;
+        const subtotal = qty * price;
+
+        // Convert to whole number (no decimals) + format with thousands separator
+        const subtotalRounded = Math.round(subtotal);
+        subtotalCell.innerText = subtotalRounded.toLocaleString('id-ID');
+
+        // Accumulate to grand total
+        grandTotal += subtotalRounded;
+      });
+
+      // Update the grand total in the DOM (no decimals) + thousands separator
+      document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('id-ID');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Listen for changes in the table
+      document.getElementById('invoiceTable').addEventListener('input', (event) => {
+        if (event.target.classList.contains('qty') || event.target.classList.contains('price')) {
+          updateTotals();
+        }
+      });
+
+      // Initial totals on page load
+      updateTotals();
+    });
+
+    // (B) Export as PNG 
+    function exportAsImage() {
+      console.log("Export button clicked. Attempting to capture...");
+      const invoiceElement = document.querySelector('.invoice-container');
+
+      html2canvas(invoiceElement).then((canvas) => {
+        console.log("Canvas captured. Converting to base64 image...");
+
+        const base64image = canvas.toDataURL("image/png");
+        console.log("Base64 image length: ", base64image.length);
+
+        // Create an <a> link in the DOM
+        const link = document.createElement('a');
+        link.href = base64image;
+        link.download = 'invoice.png';
+
+        // Append link, click, remove link
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log("Download triggered. If nothing happens, check Edge settings or console errors.");
+      })
+      .catch((err) => {
+        console.error("html2canvas error: ", err);
+      });
+    }
+  </script>
+</body>
+</html>
